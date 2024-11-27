@@ -14,10 +14,11 @@ void populate_arr(T *arr, std::size_t len)
 {
     for (int i = 0; i < len; i++)
     {
-        arr[i] = static_cast<T>(rand() % 1000);
-        if (typeid(T) == typeid(float) && typeid(T) == typeid(double))
+        if (typeid(T) == typeid(float) || typeid(T) == typeid(double))
         {
-            arr[i] /= 20.0;
+            arr[i] = static_cast<T>(rand() ) / static_cast<T> (1000 / 1.23);
+        } else {
+            arr[i] = static_cast<T>(rand() % 1000);
         }
     }
 }
@@ -38,16 +39,26 @@ void bubblesort(T *arr, std::size_t len)
 }
 
 template <typename T>
-void measure_time(T *arr, std::size_t len, void (*func)(T*, std::size_t))
+void measure_time(T, size_t len, void (*func)(T*, std::size_t), int times, int* results)
 {
-    auto start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < times; i++) {
+        T arr[len];
+        T* arr_ptr = arr;
 
-    bubblesort(arr, len);
+        populate_arr(arr, len);
 
-    auto end = std::chrono::high_resolution_clock::now();
+        std::cout << "Zaczynam mierzyć czas dla " <<  len << " elementów..." << std::endl;
+        auto start = std::chrono::high_resolution_clock::now();
 
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    std::cout << "Czas wykonania: " << duration.count() << " ms" << std::endl;
+        bubblesort(arr_ptr, len);
+
+        auto end = std::chrono::high_resolution_clock::now();
+        std::cout << "Czas zmierzony!\n" << std::endl;
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+        results[i] = duration.count();
+        len *= 10;
+    }
 }
 
 int main() {
@@ -55,15 +66,48 @@ int main() {
 
     srand (time(NULL));
 
-    size_t len = 100000;
-    int arr[len];
-    int* ptr = arr;
+    size_t len = 10;
+    int times = 5;
+    int types = 3;
 
-    std::cout << "Zapełniam tablicę..." << std::endl;
-    populate_arr(ptr, len);
-    std::cout << "Tablica zapełniona!" << std::endl;
+    int results[times];
+    int* ptr_results = results;
 
-    std::cout << "Zaczynam mierzyć czas..." << std::endl;
-    measure_time(ptr, len, &bubblesort);
-    std::cout << "Czas zmierzony!" << std::endl;
+    int final_results[types][times];
+
+    measure_time(1, len, &bubblesort, times, ptr_results);
+    for (int i = 0; i < times; i++) {
+        final_results[0][i] = results[i];
+    }
+    measure_time(static_cast<float>(1.1), len, &bubblesort, times, ptr_results);
+    for (int i = 0; i < times; i++) {
+        final_results[1][i] = results[i];
+    }
+    measure_time(1.11, len, &bubblesort, times, ptr_results);
+    for (int i = 0; i < times; i++) {
+        final_results[2][i] = results[i];
+    }
+
+    for (int i = 0; i < types; i++) {
+        switch (i) {
+            case 0:
+                std::cout << "int\t";
+                break;
+            case 1:
+                std::cout << "float\t";
+                break;
+            case 2:
+                std::cout << "double\t";
+                break;
+            default:
+                std::cout << "unknown\t";
+                break;
+        }
+
+        for (int j = 0; j < times; j++) {
+            std::cout << final_results[i][j] << "\t";
+        }
+
+        std::cout << std::endl;
+    }
 }
