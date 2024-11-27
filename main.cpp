@@ -67,7 +67,7 @@ int main() {
     srand (time(NULL));
 
     size_t len = 10;
-    int times = 5;
+    int times = 6;
     int types = 3;
 
     int results[times];
