@@ -1,0 +1,3 @@
+C:/Users/dzban/CLionProjects/sortowanie_babel/cmake-build-debug/CMakeFiles/sortowanie_babel.dir
+C:/Users/dzban/CLionProjects/sortowanie_babel/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/dzban/CLionProjects/sortowanie_babel/cmake-build-debug/CMakeFiles/rebuild_cache.dir
