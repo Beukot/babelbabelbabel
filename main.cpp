@@ -1,5 +1,4 @@
 #include <iostream>
-#include <algorithm>
 #include <chrono>
 #include <ctime>
 #include <cstdlib>
@@ -67,7 +66,7 @@ int main() {
     srand (time(NULL));
 
     size_t len = 10;
-    int times = 6;
+    int times = 4;
     int types = 3;
 
     int results[times];
@@ -87,6 +86,13 @@ int main() {
     for (int i = 0; i < times; i++) {
         final_results[2][i] = results[i];
     }
+
+    std::cout << "\t";
+    for (int i = 0; i < times; i++) {
+        std::cout << len << "\t";
+        len *= 10;
+    }
+    std::cout << std::endl;
 
     for (int i = 0; i < types; i++) {
         switch (i) {
