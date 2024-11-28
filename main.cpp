@@ -2,6 +2,7 @@
 #include <chrono>
 #include <ctime>
 #include <cstdlib>
+#include <cmath>
 #include <fstream>
 #include <string>
 #include <typeinfo>
@@ -70,9 +71,9 @@ void check_if_sorted(T *arr, std::size_t len) {
 }
 
 template <typename T>
-void measure_sort_time(T, size_t len, void (*sort_func)(T*, std::size_t), int times, int* results)
+void measure_sort_time(T, std::size_t len, void (*sort_func)(T*, std::size_t), int times)
 {
-    //std::cout << typeid(T).name() << "\t";
+    std::cout << typeid(T).name() << "\t";
 
     for (int i = 0; i < times; i++) {
         T arr[len];
@@ -89,7 +90,6 @@ void measure_sort_time(T, size_t len, void (*sort_func)(T*, std::size_t), int ti
 
         check_if_sorted(arr_ptr, len);
 
-        //results[i] = duration.count();
         std::cout << duration.count() << "\t";
         len *= 10;
     }
@@ -102,25 +102,18 @@ int main() {
 
     srand (time(NULL));
 
-    size_t len = 10;
-    int times = 4;
-    int types = 3;
-
-    int results[times];
-    int* ptr_results = results;
-
-    int final_results[types][times];
+    std::size_t len = 10;
+    int times = 1;
 
     std::cout << "bubblesort ze zmienną pomocniczą" << std::endl;
 
     std::cout << "\t";
     for (int i = 0; i < times; i++) {
-        std::cout << len << "\t";
-        len *= 10;
+        std::cout << pow(len, i + 1) << "\t";
     }
     std::cout << std::endl;
 
-    measure_sort_time(1, len, &bubblesort_temp, times, ptr_results);
-    measure_sort_time(static_cast<float>(1.1), len, &bubblesort_temp, times, ptr_results);
-    measure_sort_time(1.11, len, &bubblesort_temp, times, ptr_results);
+    measure_sort_time(1, len, &bubblesort_temp, times);
+    measure_sort_time(static_cast<float>(1.1), len, &bubblesort_temp, times);
+    measure_sort_time(1.11, len, &bubblesort_temp, times);
 }
