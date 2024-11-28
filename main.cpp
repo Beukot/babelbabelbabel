@@ -23,13 +23,13 @@ void populate_arr(T *arr, std::size_t len)
 }
 
 template <typename T>
-void bubblesort(T *arr, std::size_t len)
+void bubblesort_swap(T *arr, std::size_t len)
 {
     for (size_t i = 0; i < len; i++)
     {
         for (size_t j = 0; j < len; j++)
         {
-            if (arr[i] > arr[j])
+            if (arr[i] < arr[j])
             {
                 std::swap(arr[i], arr[j]);
             }
@@ -38,7 +38,39 @@ void bubblesort(T *arr, std::size_t len)
 }
 
 template <typename T>
-void measure_time(T, size_t len, void (*func)(T*, std::size_t), int times, int* results)
+void bubblesort_temp(T *arr, std::size_t len)
+{
+    for (size_t i = 0; i < len; i++)
+    {
+        for (size_t j = 0; j < len; j++)
+        {
+            if (arr[i] < arr[j])
+            {
+                T temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+    }
+}
+
+template <typename T>
+void check_if_sorted(T *arr, std::size_t len) {
+    bool sorted = true;
+
+    for (int i = 0; i < len - 1; i++) {
+        if (arr[i] > arr[i + 1]) {
+            sorted = false;
+        }
+    }
+
+    if (!sorted) {
+        std::cout << "Uwaga! Tablica z " << len << " elementami nie posortowała się!" << std::endl;
+    }
+}
+
+template <typename T>
+void measure_sort_time(T, size_t len, void (*sort_func)(T*, std::size_t), int times, int type, int* results)
 {
     for (int i = 0; i < times; i++) {
         T arr[len];
@@ -46,14 +78,14 @@ void measure_time(T, size_t len, void (*func)(T*, std::size_t), int times, int* 
 
         populate_arr(arr, len);
 
-        std::cout << "Zaczynam mierzyć czas dla " <<  len << " elementów..." << std::endl;
         auto start = std::chrono::high_resolution_clock::now();
 
-        bubblesort(arr_ptr, len);
+        sort_func(arr_ptr, len);
 
         auto end = std::chrono::high_resolution_clock::now();
-        std::cout << "Czas zmierzony!\n" << std::endl;
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+        check_if_sorted(arr_ptr, len);
 
         results[i] = duration.count();
         len *= 10;
@@ -74,15 +106,17 @@ int main() {
 
     int final_results[types][times];
 
-    measure_time(1, len, &bubblesort, times, ptr_results);
+    std::cout << "bubblesort ze zmienną pomocniczą" << std::endl;
+
+    measure_sort_time(1, len, &bubblesort_temp, times, 0, ptr_results);
     for (int i = 0; i < times; i++) {
         final_results[0][i] = results[i];
     }
-    measure_time(static_cast<float>(1.1), len, &bubblesort, times, ptr_results);
+    measure_sort_time(static_cast<float>(1.1), len, &bubblesort_temp, times, 1, ptr_results);
     for (int i = 0; i < times; i++) {
         final_results[1][i] = results[i];
     }
-    measure_time(1.11, len, &bubblesort, times, ptr_results);
+    measure_sort_time(1.11, len, &bubblesort_temp, times, 2, ptr_results);
     for (int i = 0; i < times; i++) {
         final_results[2][i] = results[i];
     }
@@ -98,16 +132,16 @@ int main() {
         switch (i) {
             case 0:
                 std::cout << "int\t";
-                break;
+            break;
             case 1:
                 std::cout << "float\t";
-                break;
+            break;
             case 2:
                 std::cout << "double\t";
-                break;
+            break;
             default:
                 std::cout << "unknown\t";
-                break;
+            break;
         }
 
         for (int j = 0; j < times; j++) {
