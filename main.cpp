@@ -70,13 +70,15 @@ void check_if_sorted(T *arr, std::size_t len) {
 }
 
 template <typename T>
-void measure_sort_time(T, size_t len, void (*sort_func)(T*, std::size_t), int times, int type, int* results)
+void measure_sort_time(T, size_t len, void (*sort_func)(T*, std::size_t), int times, int* results)
 {
+    //std::cout << typeid(T).name() << "\t";
+
     for (int i = 0; i < times; i++) {
         T arr[len];
         T* arr_ptr = arr;
 
-        populate_arr(arr, len);
+        populate_arr(arr_ptr, len);
 
         auto start = std::chrono::high_resolution_clock::now();
 
@@ -87,9 +89,12 @@ void measure_sort_time(T, size_t len, void (*sort_func)(T*, std::size_t), int ti
 
         check_if_sorted(arr_ptr, len);
 
-        results[i] = duration.count();
+        //results[i] = duration.count();
+        std::cout << duration.count() << "\t";
         len *= 10;
     }
+
+    std::cout << std::endl;
 }
 
 int main() {
@@ -108,19 +113,6 @@ int main() {
 
     std::cout << "bubblesort ze zmienną pomocniczą" << std::endl;
 
-    measure_sort_time(1, len, &bubblesort_temp, times, 0, ptr_results);
-    for (int i = 0; i < times; i++) {
-        final_results[0][i] = results[i];
-    }
-    measure_sort_time(static_cast<float>(1.1), len, &bubblesort_temp, times, 1, ptr_results);
-    for (int i = 0; i < times; i++) {
-        final_results[1][i] = results[i];
-    }
-    measure_sort_time(1.11, len, &bubblesort_temp, times, 2, ptr_results);
-    for (int i = 0; i < times; i++) {
-        final_results[2][i] = results[i];
-    }
-
     std::cout << "\t";
     for (int i = 0; i < times; i++) {
         std::cout << len << "\t";
@@ -128,26 +120,7 @@ int main() {
     }
     std::cout << std::endl;
 
-    for (int i = 0; i < types; i++) {
-        switch (i) {
-            case 0:
-                std::cout << "int\t";
-            break;
-            case 1:
-                std::cout << "float\t";
-            break;
-            case 2:
-                std::cout << "double\t";
-            break;
-            default:
-                std::cout << "unknown\t";
-            break;
-        }
-
-        for (int j = 0; j < times; j++) {
-            std::cout << final_results[i][j] << "\t";
-        }
-
-        std::cout << std::endl;
-    }
+    measure_sort_time(1, len, &bubblesort_temp, times, ptr_results);
+    measure_sort_time(static_cast<float>(1.1), len, &bubblesort_temp, times, ptr_results);
+    measure_sort_time(1.11, len, &bubblesort_temp, times, ptr_results);
 }
